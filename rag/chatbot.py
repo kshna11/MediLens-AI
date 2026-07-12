@@ -1,4 +1,5 @@
 import os
+import streamlit as st
 from dotenv import load_dotenv
 from google import genai
 
@@ -7,8 +8,15 @@ from rag.vector_store import load_vector_store
 # Load environment variables
 load_dotenv()
 
+# Try local .env first
+api_key = os.getenv("GEMINI_API_KEY")
+
+# If not found, use Streamlit Secrets (for deployment)
+if not api_key:
+    api_key = st.secrets["GEMINI_API_KEY"]
+
 client = genai.Client(
-    api_key=os.getenv("GEMINI_API_KEY")
+    api_key=api_key
 )
 
 
