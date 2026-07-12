@@ -1,0 +1,26 @@
+# Virtual Environment
+venv/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+
+# Environment Variables
+.env
+
+# Streamlit Secrets
+.streamlit/secrets.toml
+
+# Temporary Files
+reports/temp.pdf
+reports/AI_Medical_Summary.pdf
+
+# FAISS Vector Database
+rag/faiss_index/
+
+# VS Code
+.vscode/
+
+# OS Files
+.DS_Store
+Thumbs.db
