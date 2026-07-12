@@ -1,4 +1,5 @@
-streamlit
+streamlit==1.59.1
+
 numpy
 pandas
 scikit-learn
@@ -9,8 +10,14 @@ google-genai
 python-dotenv
 
 langchain
+langchain-core
 langchain-community
 langchain-google-genai
+langchain-huggingface
+
+sentence-transformers
+transformers
+torch
 
 faiss-cpu
 
