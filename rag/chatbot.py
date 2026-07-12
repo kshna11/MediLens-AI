@@ -23,13 +23,20 @@ client = genai.Client(
 def ask_question(question):
 
     # Load FAISS database
+    # Load FAISS database
     db = load_vector_store()
 
-    # Retrieve relevant chunks
-    docs = db.similarity_search(
-        question,
-        k=5
+    # Create retriever using Max Marginal Relevance (MMR)
+    retriever = db.as_retriever(
+        search_type="mmr",
+        search_kwargs={
+            "k": 6,
+            "fetch_k": 20
+        }
     )
+
+    # Retrieve relevant chunks
+    docs = retriever.invoke(question)
 
     # Merge retrieved text
     context = "\n\n".join(
