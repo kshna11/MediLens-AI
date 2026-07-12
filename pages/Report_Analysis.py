@@ -1,3 +1,4 @@
+import os
 import hashlib
 import streamlit as st
 
@@ -17,6 +18,14 @@ st.set_page_config(
     page_icon="📄",
     layout="wide"
 )
+
+# -------------------------------------------------
+# Create Required Directories
+# -------------------------------------------------
+os.makedirs("reports", exist_ok=True)
+os.makedirs("rag/faiss_index", exist_ok=True)
+
+TEMP_PDF = "reports/temp.pdf"
 
 # -------------------------------------------------
 # Session State
@@ -53,7 +62,7 @@ uploaded_file = st.file_uploader(
 if uploaded_file is not None:
 
     # ---------------------------------------------
-    # Detect New File using SHA-256
+    # Detect New Uploaded File
     # ---------------------------------------------
     file_bytes = uploaded_file.getvalue()
 
@@ -68,22 +77,22 @@ if uploaded_file is not None:
     # ---------------------------------------------
     # Save Uploaded PDF
     # ---------------------------------------------
-    with open("reports/temp.pdf", "wb") as file:
+    with open(TEMP_PDF, "wb") as file:
         file.write(file_bytes)
 
     # ---------------------------------------------
-    # Extract Text
+    # Extract Report Text
     # ---------------------------------------------
-    report_text = extract_text_from_pdf("reports/temp.pdf")
+    report_text = extract_text_from_pdf(TEMP_PDF)
 
     # ---------------------------------------------
-    # Create FAISS Vector Database
+    # Build Vector Database
     # ---------------------------------------------
     if not st.session_state.vector_created:
 
         with st.spinner("📚 Creating Medical Knowledge Base..."):
 
-            documents = load_pdf("reports/temp.pdf")
+            documents = load_pdf(TEMP_PDF)
 
             chunks = split_documents(documents)
 
@@ -91,7 +100,7 @@ if uploaded_file is not None:
 
             st.session_state.vector_created = True
 
-        st.toast("📚 Medical Knowledge Base Ready")
+        st.success("✅ Medical Knowledge Base Created")
 
     # ---------------------------------------------
     # AI Summary
@@ -104,9 +113,11 @@ if uploaded_file is not None:
 
         with st.spinner("🤖 Analyzing Medical Report..."):
 
-            st.session_state.summary = generate_summary(report_text)
+            st.session_state.summary = generate_summary(
+                report_text
+            )
 
-        st.toast("🤖 AI Summary Generated")
+        st.success("✅ AI Summary Generated")
 
     # ---------------------------------------------
     # Display Summary
@@ -116,13 +127,15 @@ if uploaded_file is not None:
         st.markdown(st.session_state.summary)
 
     # ---------------------------------------------
-    # Export Section
+    # Export Summary
     # ---------------------------------------------
     st.divider()
 
     st.subheader("📥 Export Report")
 
-    pdf_path = create_summary_pdf(st.session_state.summary)
+    pdf_path = create_summary_pdf(
+        st.session_state.summary
+    )
 
     with open(pdf_path, "rb") as pdf:
 
